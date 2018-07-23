@@ -15,13 +15,14 @@ public class Controller {
     public void processGuesses() {
         Scanner sc = new Scanner(System.in);
 
-        model.setLowerBound(View.LOWER_BOUND);
-        model.setUpperBound(View.UPPER_BOUND);
+        model.setLowerBound(GlobalConstants.PRIMARY_MIN_BARRIER);
+        model.setUpperBound(GlobalConstants.PRIMARY_MAX_BARRIER);
         model.setNumber(rand(model.getLowerBound(), model.getUpperBound()));
         
         inputValueWithScanner(sc, model.getNumber());
         
         view.printMessage(View.WIN_MESSAGE);
+        view.printMessage(View.YOUR_GUESSES_MESSAGE + String.valueOf(model.getGuesses()));
     }
 
     private int rand(int lowerBound, int upperBound) {
@@ -42,6 +43,10 @@ public class Controller {
 	public void inputValueWithScanner(Scanner sc, int number){
         while (!model.getGuessed()) {
         	view.printMessage(constructBoundsMessage());
+        	while (!sc.hasNextInt()) {
+                view.printMessage(View.WRONG_INPUT_MESSAGE + constructBoundsMessage());
+                sc.next();
+            }
         	int guess = Integer.parseInt(sc.next());
         	if(guess==model.getNumber()) {
         		model.setGuessed(true);
@@ -55,7 +60,10 @@ public class Controller {
     }
 
 	public void updateBounds(int guess) {
-		if(!(guess<=model.getLowerBound()||guess>=model.getUpperBound())){
+		if(guess<=model.getLowerBound()||guess>=model.getUpperBound()){
+			view.printMessage(View.WRONG_INPUT_MESSAGE);
+		}
+		else{
 			if(guess<model.getNumber()){
 				model.setLowerBound(guess);
 			}
